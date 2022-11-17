@@ -74,18 +74,17 @@ function router(evt) {
   try {
     let route = resolveRoute(url);
 
-    if (typeof route.preFunction === Function) {
+    if (typeof route.preFunction === 'function') {
       if (route.preFunction()) {
         route.mainFunction();
-      } else if (typeof route.failFunction === Function) {
+      } else if (typeof route.failFunction === 'function') {
         route.failFunction();
       }
     } else {
       route.mainFunction();
     }
   } catch (e) {
-    if (typeof defaultFunction === Function) defaultFunction();
-    defaultFunction();
+    if (typeof defaultFunction === 'function') defaultFunction();
     console.log(e);
   }
 }
