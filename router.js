@@ -3,7 +3,7 @@
 /**
  * Defines a route, and the functions related to it
  */
-export default class Route {
+export class Route {
   path;
   mainFunction;
   preFunction;
@@ -95,7 +95,7 @@ function router(evt) {
  * Start the router, should be called when everything has been loaded, 
  * to prevent starting the router before the resources has been set
  */
- export default function start() {
+ export function start() {
   router();
   window.addEventListener("hashchange", router);
 }
