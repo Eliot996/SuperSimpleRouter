@@ -11,6 +11,7 @@ var htmlTemplateCache = new Map()
  * Route constants.
  */
 const ROUTE_HOME = '/'
+const ROUTE_PARAM = '/params/{1}/{2}'
 
 /**
  * setting the default action 
@@ -23,6 +24,8 @@ Route.setDefaultFunction(pageNotFound);
 new Route(ROUTE_HOME, home)
     .setPreFunction(pre)
     .setFailFunction(fail);
+
+new Route(ROUTE_PARAM, params);
 
 /**
  * Clones an embedded HTML template, from the HTML file, via an id.
@@ -55,6 +58,15 @@ function fail() {
 function pre() {
     console.log("hello, world! from preFunction");
     return Math.round(Math.random())
+}
+
+/**
+ * Param function
+ */
+function params(first, second) {
+    $('#view').html(cloneHtmlTemplate('template-ups'));
+    $('#first').html(first);
+    $('#second').html(second);
 }
 
 /**
