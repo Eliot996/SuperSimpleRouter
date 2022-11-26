@@ -21,6 +21,8 @@ export default class Route {
 
   /**
    * set the function to be called before the mainFunction of a route
+   * the function should return either true or false,
+   * if the function returns false, the fail function will be called, if set
    */
   setPreFunction(preFunction) {
     this.preFunction = preFunction;
@@ -90,7 +92,10 @@ function router(evt) {
 }
 
 /**
- * Window event hooks.
+ * Start the router, should be called when everything has been loaded, 
+ * to prevent starting the router before the resources has been set
  */
-window.addEventListener("load", router);
-window.addEventListener("hashchange", router);
+ export default function start() {
+  router();
+  window.addEventListener("hashchange", router);
+}

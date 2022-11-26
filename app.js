@@ -1,5 +1,5 @@
 'use strict'
-import Route from "./router.js"
+import {Route, start} from "./router.js"
 
 /**
  * Used to hold cached versions of used HTML templates.
@@ -63,3 +63,6 @@ function pre() {
  function pageNotFound() {
     $('#view').html(cloneHtmlTemplate('template-404'));
 }
+
+
+start()
