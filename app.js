@@ -2,12 +2,6 @@
 import {Route, start} from "./router.js"
 
 /**
- * Used to hold cached versions of used HTML templates.
- */
-var htmlTemplateCache = new Map()
-
-
-/**
  * Route constants.
  */
 const ROUTE_HOME = '/'
