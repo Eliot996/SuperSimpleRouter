@@ -64,7 +64,7 @@ function pre() {
  * Param function
  */
 function params(first, second) {
-    $('#view').html(cloneHtmlTemplate('template-ups'));
+    $('#view').html(cloneHtmlTemplate('template-params'));
     $('#first').html(first);
     $('#second').html(second);
 }
