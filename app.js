@@ -5,7 +5,7 @@ import {Route, start} from "./router.js"
  * Route constants.
  */
 const ROUTE_HOME = '/'
-const ROUTE_PARAM = '/params/{1}/{2}'
+const ROUTE_PARAM = '/params/([0-9]+)/{2}'
 
 /**
  * setting the default action 
