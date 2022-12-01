@@ -1,5 +1,5 @@
 'use strict'
-import {Route, start} from "./router.js"
+import Router from "./router.js"
 
 /**
  * Route constants.
@@ -10,16 +10,16 @@ const ROUTE_PARAM = '/params/([0-9]+)/{2}'
 /**
  * setting the default action 
  */
-Route.setDefaultFunction(pageNotFound);
+Router.setDefaultFunction(pageNotFound);
 
 /**
  * Creating the routes for the app
  */
-new Route(ROUTE_HOME, home)
+Router.addRoute(ROUTE_HOME, home)
     .setPreFunction(pre)
     .setFailFunction(fail);
 
-new Route(ROUTE_PARAM, params);
+Router.addRoute(ROUTE_PARAM, params);
 
 /**
  * Clones an embedded HTML template, from the HTML file, via an id.
@@ -71,4 +71,4 @@ function params(first, second) {
 }
 
 
-start()
+Router.start()
