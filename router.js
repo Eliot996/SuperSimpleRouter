@@ -1,31 +1,31 @@
 /**
  * Store for the routes
  */
- let routes = [];
+let routes = [];
 
- /**
-  * The default function is used when the url does not match a route
-  */
- let defaultFunction = "";
+/**
+ * The default function is used when the url does not match a route
+ */
+let defaultFunction = "";
 
 export default class Router {
   /**
    * Makes a new router, and it is added to the posible routes, in the router.
    * Takes a path as a string, and the function to be executed, when the path is hit
-   * 
+   *
    * @param {String} path Parameters can be added by adding "{}"(posibly with comment inside). It can also be done with RegEx, encapsulating it in "()", however don't escape "/"
    * @param {function} mainFunction Will be executed with the arguments, in order of appearence in the path
-   * @returns 
+   * @returns
    */
   static addRoute(path, mainFunction) {
     return new Route(path, mainFunction);
   }
 
   /**
-   * Start the router, should be called when everything has been loaded, 
+   * Start the router, should be called when everything has been loaded,
    * to prevent starting the router before the resources has been set
    */
-   static start() {
+  static start() {
     router();
     window.addEventListener("hashchange", router);
   }
@@ -34,15 +34,57 @@ export default class Router {
    * This sets the default route function for the router
    * If no route is found for a given url, then this function is executed
    */
-   static setDefaultFunction(f) {
+  static setDefaultFunction(f) {
     defaultFunction = f;
   }
 }
 
+let exitFunction;
+let url;
+
 /**
-   * Gets a route.
-   */
- function resolveRoute(path) {
+ * Routes the urls in the browser location bar.
+ */
+function router() {
+  // exit function
+  if (typeof exitFunction === "function") { // checks for the exit function
+    if (!exitFunction()) {                  // if the exitFunction returns false
+      window.location.hash = url;           // set the url to the old url, and return out of router
+      return;
+    }
+  }
+
+  url = window.location.hash.slice(1) || "/";
+
+  try {
+    let route = resolveRoute(url);
+
+    let args = [];
+    if (route.hasParams) {
+      args = url.match(route.path).splice(1);
+    }
+
+    if (typeof route.preFunction === "function") {
+      if (Reflect.apply(route.preFunction, undefined, args)) {
+        Reflect.apply(route.mainFunction, undefined, args);
+      } else if (typeof route.failFunction === "function") {
+        Reflect.apply(route.failFunction, undefined, args);
+      }
+    } else {
+      Reflect.apply(route.mainFunction, undefined, args);
+    }
+
+    exitFunction = route.exitFunction;
+  } catch (e) {
+    if (typeof defaultFunction === "function") defaultFunction();
+    console.log(e);
+  }
+}
+
+/**
+ * Gets a route.
+ */
+function resolveRoute(path) {
   for (const route of routes) {
     if (route.path.test(path)) {
       return route;
@@ -52,43 +94,11 @@ export default class Router {
 }
 
 /**
- * Routes the urls in the browser location bar.
- */
- function router() {
-  let url = window.location.hash.slice(1) || "/";
-
-  try {
-    let route = resolveRoute(url);
-
-    let args = [];
-    if(route.hasParams) {
-      args = url.match(route.path).splice(1);
-    }
-
-    if (typeof route.preFunction === 'function') {
-      if (Reflect.apply(route.preFunction, undefined, args)) {
-        Reflect.apply(route.mainFunction, undefined, args)
-      } else if (typeof route.failFunction === 'function') {
-        Reflect.apply(route.failFunction, undefined, args)
-      }
-    } else {
-      Reflect.apply(route.mainFunction, undefined, args)
-    }
-    
-  } catch (e) {
-    if (typeof defaultFunction === 'function') defaultFunction();
-    console.log(e);
-  }
-}
-
-
-
-/**
  * Sets the head and tail of the regex for in the path.
  * As default the head and tail requires the an exact match on the url
  */
 const REGEX_HEAD = "^";
-const REGEX_TAIL = "\/?$";
+const REGEX_TAIL = "/?$";
 
 const PARAM_PATTERN = /{[^\/]+}/g;
 const USER_PARAM_PATTERN = /\([^\/]+\)/g; // if the user inputs a regex expression, with a group
@@ -103,18 +113,19 @@ class Route {
   mainFunction;
   preFunction;
   failFunction;
+  exitFunction;
 
   /**
    * Constructor for Route, takes a path as a string, and the function to be executed, when the path is hit
-   * 
+   *
    * @param {String} path Parameters can be added by adding "{}"(posibly with comment inside). It can also be done with RegEx, encapsulating it in "()", however don't escape "/"
    * @param {function} mainFunction Will be executed with the arguments, in order of appearence in the path
-   * 
+   *
    */
   constructor(path, mainFunction) {
     // adding the escape character infront of "/" to not mess with RegEx
     path = path.replace("/", "\\/");
-    
+
     // check if the path contains params
     if (PARAM_PATTERN.test(path) || USER_PARAM_PATTERN.test(path)) {
       this.hasParams = true;
@@ -124,7 +135,7 @@ class Route {
     }
 
     // "^" and "$" are added to make exact match on string, and the "\/?" is to ignore trailing "/"
-    this.path = new RegExp(REGEX_HEAD + path + REGEX_TAIL); 
+    this.path = new RegExp(REGEX_HEAD + path + REGEX_TAIL);
     this.mainFunction = mainFunction;
 
     routes.push(this);
@@ -134,7 +145,7 @@ class Route {
    * Set the function to be called before the mainFunction of a route.
    * The function should return either true or false,
    * ff the function returns false, the fail function will be called, if set.
-   * @param {function} preFunction 
+   * @param {function} preFunction
    */
   setPreFunction(preFunction) {
     this.preFunction = preFunction;
@@ -143,11 +154,22 @@ class Route {
 
   /**
    * set the function to be called if the preFunction of a route returns false
-   * @param {function} failFunction 
+   * @param {function} failFunction
    */
   setFailFunction(failFunction) {
     this.failFunction = failFunction;
     return this;
   }
 
+  /**
+   * Sets a function to be called before the new route is loaded
+   *
+   * @param {Function} exitFunction The function should return true or false, if the router 
+   * should allow the redirect and fire the next route
+   * @returns {Route}
+   */
+  setExitFunction(exitFunction) {
+    this.exitFunction = exitFunction;
+    return this;
+  }
 }
