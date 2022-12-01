@@ -91,7 +91,7 @@ const REGEX_HEAD = "^";
 const REGEX_TAIL = "\/?$";
 
 const PARAM_PATTERN = /{[^\/]+}/g;
-const USER_PARAM_PATTERN = /\(\[[^\/]+\)/g; // if the user inputs a regex expression, with a group
+const USER_PARAM_PATTERN = /\([^\/]+\)/g; // if the user inputs a regex expression, with a group
 const PARAM_GET_PATTERN = "([^/\\s]+)";
 
 /**
