@@ -95,14 +95,14 @@ function resolveRoute(path) {
 
 /**
  * Sets the head and tail of the regex for in the path.
- * As default the head and tail requires the an exact match on the url
+ * As default the head and tail requires an exact match on the url
  */
 const REGEX_HEAD = "^";
 const REGEX_TAIL = "/?$";
 
-const PARAM_PATTERN = /{[^\/]+}/g;
-const USER_PARAM_PATTERN = /\([^\/]+\)/g; // if the user inputs a regex expression, with a group
-const PARAM_GET_PATTERN = "([^/\\s]+)";
+const PARAM_PATTERN = /{[^\/]*}/g;         // Pattern for testing for the standard param pattern ie. "{}"
+const PARAM_GET_PATTERN = "([^/\\\s]+)";   // Pattern to be inserted into route, in place of the standard param pattern
+const USER_PARAM_PATTERN = /\([^\/]+\)/g;  // If the user inputs a regex expression, with a group, used to check if the there are params that needs to added to the run of the functions in the route
 
 /**
  * Defines a route, and the functions related to it
